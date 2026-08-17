@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple antenna/signal glyph, kept well inside the adaptive-icon
+         safe zone (center 66dp circle) so it doesn't get clipped on
+         devices that mask icons to a circle/squircle/rounded-square. -->
+    <path
+        android:fillColor="#388bfd"
+        android:pathData="M54,30a8,8 0,1 0,0.01 0z" />
+    <path
+        android:strokeColor="#2ea043"
+        android:strokeWidth="4"
+        android:pathData="M54,38 V78" />
+    <path
+        android:strokeColor="#2ea043"
+        android:strokeWidth="4"
+        android:pathData="M38,54 Q54,42 70,54" />
+    <path
+        android:strokeColor="#2ea043"
+        android:strokeWidth="4"
+        android:pathData="M32,62 Q54,44 76,62" />
+</vector>

@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TACTICOM | Local Intercom System</title>
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+            --panel-bg: #141923;
+            --panel-border: #232d3f;
+            --text-main: #e6edf3;
+            --text-muted: #8b949e;
+            --accent-green: #2ea043;
+            --accent-red: #f85149;
+            --accent-blue: #388bfd;
+            --accent-amber: #d29922;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .terminal-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 420px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .brand {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-blue);
+        }
+
+        .status-pill {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: #1c212c;
+            border: 1px solid var(--panel-border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-amber);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .metric-box {
+            background: #0d1117;
+            border: 1px solid var(--panel-border);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        .vu-container {
+            background: #0d1117;
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .vu-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .vu-track {
+            height: 8px;
+            background: #1c212c;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .vu-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-green) 70%, var(--accent-amber) 85%, var(--accent-red) 100%);
+            transition: width 0.05s ease;
+        }
+
+        .field-group {
+            margin-bottom: 12px;
+        }
+
+        .field-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .field-input {
+            width: 100%;
+            background: #0d1117;
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .field-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .field-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .field-row .field-group {
+            flex: 1;
+        }
+
+        .error-text {
+            color: var(--accent-red);
+            font-size: 11px;
+            margin-top: -4px;
+            margin-bottom: 10px;
+            min-height: 14px;
+        }
+
+        .error-banner {
+            display: none;
+            background: rgba(248, 81, 73, 0.12);
+            border: 1px solid var(--accent-red);
+            color: #ffb4af;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            animation: shake 0.35s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(56, 139, 253, 0.3);
+            transition: background 0.2s;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        .link-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 11px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .field-hint {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: -8px;
+            margin-bottom: 14px;
+        }
+
+        .session-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .session-empty {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: #0d1117;
+            border: 1px dashed var(--panel-border);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .session-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0d1117;
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+
+        .session-card:active {
+            background: #171d29;
+            border-color: var(--accent-blue);
+        }
+
+        .session-card-name {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .session-card-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .session-card-arrow {
+            font-size: 20px;
+            color: var(--text-muted);
+        }
+
+        .lock-icon {
+            font-size: 11px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            padding: 16px;
+        }
+
+        .modal-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 340px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-title {
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 14px;
+            color: var(--text-main);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-secondary {
+            background: #1c212c;
+            border: 1px solid var(--panel-border);
+        }
+
+        .ring-row {
+            margin: 4px 0 18px 0;
+        }
+
+        .btn-ring {
+            background: linear-gradient(135deg, #d29922, #f85149);
+            box-shadow: 0 4px 14px rgba(248, 81, 73, 0.3);
+        }
+
+        .ring-status {
+            display: none;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .ptt-trigger-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .ptt-button {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #2a3241, #141923);
+            border: 6px solid #232d3f;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.8), 0 8px 20px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            touch-action: none;
+            transition: all 0.15s ease;
+        }
+
+        .ptt-button.ready {
+            border-color: var(--accent-green);
+            color: var(--text-main);
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.6), 0 0 15px rgba(46, 160, 67, 0.2);
+        }
+
+        .ptt-button.transmitting {
+            background: radial-gradient(circle at 30% 30%, #f85149, #9e1313) !important;
+            border-color: #ff7b72 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 30px rgba(248, 81, 73, 0.6) !important;
+            transform: scale(0.96);
+        }
+
+        .ptt-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .ptt-label {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+
+        .mode-switch {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #0d1117;
+            border: 1px solid var(--panel-border);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+        }
+
+        .mode-option {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-option.active {
+            background: #1c212c;
+            color: var(--text-main);
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .leave-row {
+            text-align: center;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="terminal-card">
+        <div class="header">
+            <div class="brand">
+                <div class="brand-dot"></div> TACTICOM
+            </div>
+            <div id="statusPill" class="status-pill">
+                <div id="statusDot" class="status-dot"></div>
+                <span id="statusText">INITIALIZING</span>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-box">
+                <div class="metric-label">Active Nodes</div>
+                <div id="peerCount" class="metric-value">0</div>
+            </div>
+            <div class="metric-box">
+                <div class="metric-label">Session</div>
+                <div id="channelValue" class="metric-value" style="color: var(--accent-blue);">&mdash;</div>
+                <div id="callsignValue" style="font-size:10px;color:var(--text-muted);margin-top:2px;"></div>
+            </div>
+        </div>
+
+        <div class="vu-container">
+            <div class="vu-header">
+                <span>AUDIO INPUT LEVEL</span>
+                <span id="vuValue">0%</span>
+            </div>
+            <div class="vu-track">
+                <div id="vuBar" class="vu-bar"></div>
+            </div>
+        </div>
+
+        <div id="lobbyPanel">
+            <div class="field-group">
+                <label class="field-label">Your Profile</label>
+                <input id="profileInput" class="field-input" type="text" maxlength="24" placeholder="e.g. Dad's Phone">
+            </div>
+            <div class="field-hint">Saved on this device — used as your name in every session.</div>
+
+            <div id="ringRow" class="ring-row">
+                <button id="ringBtn" class="btn-primary btn-ring" onclick="ringHost()">&#128276; RING THE HOST</button>
+                <div id="ringStatus" class="ring-status"></div>
+            </div>
+
+            <div id="lobbyErrorBanner" class="error-banner"></div>
+
+            <label class="field-label">Open Sessions</label>
+            <div id="sessionList" class="session-list">
+                <div class="session-empty">No sessions yet — start one below.</div>
+            </div>
+
+            <div class="field-row" style="margin-top:16px;">
+                <div class="field-group">
+                    <label class="field-label">New Session Name</label>
+                    <input id="newSessionName" class="field-input" type="text" maxlength="32" placeholder="e.g. Kitchen">
+                </div>
+                <div class="field-group">
+                    <label class="field-label">Access Code (optional)</label>
+                    <input id="newSessionPassword" class="field-input" type="password" maxlength="64" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;">
+                </div>
+            </div>
+            <button id="createBtn" class="btn-primary" onclick="createSession()">START SESSION</button>
+        </div>
+
+        <div id="controls" style="display: none;">
+            <div class="mode-switch">
+                <button id="pttModeBtn" class="mode-option active" onclick="setMode('ptt')">PRESS TO TALK</button>
+                <button id="alwaysModeBtn" class="mode-option" onclick="setMode('always')">CONSTANT LIVE</button>
+            </div>
+
+            <div class="ptt-trigger-container">
+                <button id="talkBtn" class="ptt-button ready">
+                    <div class="ptt-icon">&#127908;</div>
+                    <div id="talkLabel" class="ptt-label">HOLD TO TALK</div>
+                </button>
+            </div>
+
+            <div class="leave-row">
+                <button class="link-btn" onclick="leaveSession()">LEAVE SESSION / BACK TO LOBBY</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="passwordModal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div id="modalSessionName" class="modal-title">Session</div>
+            <div class="field-group">
+                <label class="field-label">Access Code</label>
+                <input id="modalPasswordInput" class="field-input" type="password" maxlength="64">
+            </div>
+            <div id="modalErrorText" class="error-text"></div>
+            <div class="modal-actions">
+                <button class="btn-primary btn-secondary" onclick="closePasswordModal()">CANCEL</button>
+                <button class="btn-primary" onclick="submitPasswordModal()">JOIN</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ------------------------------------------------------------------
+        // Audio quality constants.
+        //
+        // The previous version captured and played back at 16 kHz to keep
+        // network messages small and reduce latency -- but that ceiling on
+        // sample rate is what made voices sound thin/"crap". On a LAN,
+        // bandwidth is not the constraint (48 kHz mono 16-bit PCM is only
+        // ~96 KB/s, trivial for Wi-Fi), so quality is raised to 48 kHz --
+        // the same rate used for broadcast-quality audio -- while chunking
+        // is kept short (80ms) so latency stays low.
+        // ------------------------------------------------------------------
+        const SAMPLE_RATE = 48000;
+        const CHUNK_MS = 80;
+        const CHUNK_SAMPLES = Math.round(SAMPLE_RATE * CHUNK_MS / 1000);
+
+        // AudioWorklet processor source, loaded via Blob URL so the whole
+        // app stays a single file.
+        //
+        // The output is explicitly silenced: the node must stay connected
+        // to destination for process() to keep firing in every browser,
+        // but we never want to hear our own mic looped back locally.
+        //
+        // It only encodes+posts samples while "active" (i.e. while
+        // actually transmitting), so idle CPU use is close to zero.
+        const MIC_WORKLET_SRC = `
+            class MicCaptureProcessor extends AudioWorkletProcessor {
+                constructor() {
+                    super();
+                    this.active = false;
+                    this.chunkSamples = ${CHUNK_SAMPLES};
+                    this.buffer = new Float32Array(this.chunkSamples);
+                    this.writeIndex = 0;
+                    this.port.onmessage = (e) => {
+                        if (e.data && e.data.type === 'set-active') {
+                            this.active = e.data.active;
+                            this.writeIndex = 0; // start clean on every key-up
+                        }
+                    };
+                }
+                flush() {
+                    const pcm16 = new Int16Array(this.writeIndex);
+                    for (let i = 0; i < this.writeIndex; i++) {
+                        const s = Math.max(-1, Math.min(1, this.buffer[i]));
+                        pcm16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                    }
+                    this.port.postMessage(pcm16.buffer, [pcm16.buffer]);
+                    this.writeIndex = 0;
+                }
+                process(inputs, outputs) {
+                    const output = outputs[0];
+                    if (output && output[0]) output[0].fill(0);
+                    if (this.active) {
+                        const input = inputs[0];
+                        if (input && input[0] && input[0].length) {
+                            const channel = input[0];
+                            for (let i = 0; i < channel.length; i++) {
+                                this.buffer[this.writeIndex++] = channel[i];
+                                if (this.writeIndex >= this.chunkSamples) this.flush();
+                            }
+                        }
+                    }
+                    return true;
+                }
+            }
+            registerProcessor('mic-capture-processor', MicCaptureProcessor);
+        `;
+
+        const JITTER_BUFFER_SEC = 0.12;   // small cushion to smooth normal network jitter
+        const MAX_BACKLOG_SEC = 0.6;      // hard cap: never let playback fall more than
+                                           // this far behind live -- drop stale audio
+                                           // instead of "catching up" on everything missed
+
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const peerCount = document.getElementById('peerCount');
+        const channelValue = document.getElementById('channelValue');
+        const callsignValue = document.getElementById('callsignValue');
+        const lobbyPanel = document.getElementById('lobbyPanel');
+        const lobbyErrorBanner = document.getElementById('lobbyErrorBanner');
+        const sessionListEl = document.getElementById('sessionList');
+        const createBtn = document.getElementById('createBtn');
+        const controls = document.getElementById('controls');
+        const talkBtn = document.getElementById('talkBtn');
+        const talkLabel = document.getElementById('talkLabel');
+        const pttBtn = document.getElementById('pttModeBtn');
+        const alwaysBtn = document.getElementById('alwaysModeBtn');
+        const vuBar = document.getElementById('vuBar');
+        const vuValue = document.getElementById('vuValue');
+        const profileInput = document.getElementById('profileInput');
+        const passwordModal = document.getElementById('passwordModal');
+        const modalSessionName = document.getElementById('modalSessionName');
+        const modalPasswordInput = document.getElementById('modalPasswordInput');
+        const modalErrorText = document.getElementById('modalErrorText');
+        const ringBtn = document.getElementById('ringBtn');
+        const ringStatus = document.getElementById('ringStatus');
+
+        function showLobbyError(text) {
+            lobbyErrorBanner.textContent = text;
+            lobbyErrorBanner.style.display = text ? 'block' : 'none';
+            lobbyErrorBanner.style.animation = 'none';
+            void lobbyErrorBanner.offsetWidth;
+            lobbyErrorBanner.style.animation = '';
+        }
+
+        let ws = null;
+        let reconnectAttempts = 0;
+        let lastLobby = [];
+        let modalSession = null;
+        let pendingPassword = undefined;
+        let activeSession = null; // { id, password } while inside a session, else null
+
+        let audioCtx;
+        let micStream;
+        let micWorklet;
+        let analyserNode;
+        let nextStartTime = 0;
+        let currentMode = 'ptt';
+        let isTransmitting = false;
+
+        // ------------------------------------------------------------------
+        // Profile: a display name saved on THIS device (localStorage), sent
+        // to the server on every connect/reconnect and used as your name
+        // whenever you create or join a session.
+        // ------------------------------------------------------------------
+        let myProfile = localStorage.getItem('tacticom_profile') || '';
+        profileInput.value = myProfile;
+        // 'input' fires on every keystroke, not just on blur -- so a name
+        // typed and immediately used (tapping Start Session without
+        // tabbing away first) is never stale.
+        profileInput.addEventListener('input', saveProfile);
+
+        function saveProfile() {
+            myProfile = profileInput.value.trim().slice(0, 24);
+            localStorage.setItem('tacticom_profile', myProfile);
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'set_profile', profile: myProfile || undefined }));
+            }
+        }
+
+        function setStatus(state) {
+            const map = {
+                initializing: { text: 'INITIALIZING', color: 'var(--accent-amber)' },
+                online: { text: 'ONLINE', color: 'var(--accent-green)' },
+                offline: { text: 'OFFLINE', color: 'var(--accent-red)' },
+                reconnecting: { text: 'RECONNECTING', color: 'var(--accent-amber)' },
+            };
+            const s = map[state] || map.initializing;
+            statusText.textContent = s.text;
+            statusDot.style.background = s.color;
+            statusDot.style.boxShadow = state === 'offline' ? 'none' : `0 0 8px ${s.color}`;
+        }
+
+        // ------------------------------------------------------------------
+        // WebSocket connection with auto-reconnect (exponential backoff).
+        // The page always tries to stay connected -- there's no separate
+        // "disconnect" step, only leaving a session back to the lobby.
+        //
+        // On every (re)connect it sends 'hello' with the saved profile, so
+        // the lobby always reflects who you are. If the connection dropped
+        // while INSIDE a session, it also immediately retries joining that
+        // same session (with the same access code) -- a brief Wi-Fi drop
+        // resumes automatically instead of dumping you back at the lobby.
+        // ------------------------------------------------------------------
+        function connectWebSocket() {
+            const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            ws = new WebSocket(`${protocol}//${location.host}/ws`);
+            ws.binaryType = 'arraybuffer';
+
+            ws.onopen = () => {
+                reconnectAttempts = 0;
+                setStatus('online');
+                ws.send(JSON.stringify({ type: 'hello', profile: myProfile || undefined }));
+                if (activeSession) {
+                    ws.send(JSON.stringify({
+                        type: 'join_session',
+                        id: activeSession.id,
+                        password: activeSession.password,
+                    }));
+                }
+            };
+
+            ws.onclose = () => {
+                setStatus('reconnecting');
+                const delay = Math.min(1000 * (2 ** reconnectAttempts), 8000) + Math.random() * 400;
+                reconnectAttempts++;
+                setTimeout(connectWebSocket, delay);
+            };
+
+            ws.onerror = () => {
+                try { ws.close(); } catch (e) { /* already closing */ }
+            };
+
+            ws.onmessage = handleMessage;
+        }
+
+        function handleMessage(event) {
+            if (typeof event.data === 'string') {
+                let msg;
+                try { msg = JSON.parse(event.data); } catch (e) { return; }
+                if (msg.type === 'lobby') {
+                    renderLobby(msg.sessions);
+                } else if (msg.type === 'session_joined') {
+                    onSessionJoined(msg);
+                } else if (msg.type === 'session_error') {
+                    onSessionError(msg);
+                } else if (msg.type === 'presence') {
+                    peerCount.textContent = msg.count;
+                } else if (msg.type === 'tx_start') {
+                    playPreambleTone();
+                } else if (msg.type === 'tx_stop') {
+                    playCourtesyBeep();
+                } else if (msg.type === 'ring_stop') {
+                    resetRingButton();
+                    showRingStatus(msg.reason === 'timeout' ? 'No answer — try again.' : 'Ringing stopped.');
+                } else if (msg.type === 'ring_error') {
+                    resetRingButton();
+                    showRingStatus(msg.reason);
+                }
+            } else if (event.data instanceof ArrayBuffer) {
+                playReceivedPCM(event.data);
+            }
+        }
+
+        // ------------------------------------------------------------------
+        // Lobby: the list of Sessions currently open, pushed by the server
+        // any time it changes. Tapping a card joins it (prompting for an
+        // access code first if it's locked).
+        // ------------------------------------------------------------------
+        function renderLobby(list) {
+            lastLobby = list;
+            if (!list.length) {
+                sessionListEl.innerHTML = '<div class="session-empty">No sessions yet — start one below.</div>';
+                return;
+            }
+            sessionListEl.innerHTML = list.map(s => `
+                <div class="session-card" onclick="attemptJoin('${escapeAttr(s.id)}')">
+                    <div>
+                        <div class="session-card-name">${escapeHtml(s.name)}${s.locked ? ' <span class="lock-icon">&#128274;</span>' : ''}</div>
+                        <div class="session-card-meta">${s.count} online</div>
+                    </div>
+                    <div class="session-card-arrow">&rsaquo;</div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function escapeAttr(str) {
+            return String(str).replace(/'/g, "&#39;");
+        }
+
+        function attemptJoin(id) {
+            const session = lastLobby.find(s => s.id === id);
+            if (!session) return;
+            if (session.locked) {
+                openPasswordModal(session);
+            } else {
+                pendingPassword = undefined;
+                showLobbyError('');
+                ws.send(JSON.stringify({ type: 'join_session', id }));
+            }
+        }
+
+        function openPasswordModal(session) {
+            modalSession = session;
+            modalSessionName.textContent = 'Session: ' + session.name;
+            modalPasswordInput.value = '';
+            modalErrorText.textContent = '';
+            passwordModal.style.display = 'flex';
+            modalPasswordInput.focus();
+        }
+
+        function closePasswordModal() {
+            modalSession = null;
+            passwordModal.style.display = 'none';
+        }
+
+        function submitPasswordModal() {
+            if (!modalSession) return;
+            pendingPassword = modalPasswordInput.value;
+            ws.send(JSON.stringify({ type: 'join_session', id: modalSession.id, password: pendingPassword }));
+        }
+
+        function createSession() {
+            const name = document.getElementById('newSessionName').value.trim();
+            const password = document.getElementById('newSessionPassword').value;
+            if (!name) { showLobbyError('Give the session a name.'); return; }
+            pendingPassword = password || undefined;
+            showLobbyError('');
+            createBtn.disabled = true;
+            createBtn.textContent = 'STARTING...';
+            ws.send(JSON.stringify({ type: 'create_session', name, password: pendingPassword }));
+        }
+
+        function onSessionJoined(msg) {
+            activeSession = { id: msg.session.id, password: pendingPassword };
+            closePasswordModal();
+            createBtn.disabled = false;
+            createBtn.textContent = 'START SESSION';
+            channelValue.textContent = msg.session.name;
+            callsignValue.textContent = 'as ' + msg.name;
+            peerCount.textContent = msg.count;
+            lobbyPanel.style.display = 'none';
+            controls.style.display = 'block';
+            startAudioPipeline();
+        }
+
+        function onSessionError(msg) {
+            const reason = msg.reason || 'Could not join session.';
+            if (passwordModal.style.display === 'flex') {
+                modalErrorText.textContent = reason;
+            } else {
+                showLobbyError(reason);
+            }
+            createBtn.disabled = false;
+            createBtn.textContent = 'START SESSION';
+        }
+
+        function leaveSession() {
+            stopTransmission();
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'leave_session' }));
+            }
+            teardownAudio();
+            activeSession = null;
+            controls.style.display = 'none';
+            lobbyPanel.style.display = 'block';
+            peerCount.textContent = '0';
+            channelValue.textContent = '\u2014';
+            callsignValue.textContent = '';
+        }
+
+        function teardownAudio() {
+            if (micStream) micStream.getTracks().forEach(t => t.stop());
+            if (audioCtx) audioCtx.close();
+            audioCtx = null;
+            micWorklet = null;
+            analyserNode = null;
+        }
+
+        // ------------------------------------------------------------------
+        // Ring the Host
+        //
+        // This just asks the server to ring -- the actual ring happens on
+        // the phone running the server itself (via Termux:API), not in any
+        // browser, so it works whether or not anyone has this page open.
+        // This button only tracks "did my request go through / get
+        // answered", nothing more.
+        // ------------------------------------------------------------------
+        function ringHost() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) return;
+            ringBtn.disabled = true;
+            ringBtn.textContent = 'RINGING...';
+            showRingStatus('Ringing the house phone (up to 15s)...');
+            ws.send(JSON.stringify({ type: 'ring' }));
+        }
+
+        function showRingStatus(text) {
+            ringStatus.textContent = text;
+            ringStatus.style.display = text ? 'block' : 'none';
+        }
+
+        function resetRingButton() {
+            ringBtn.disabled = false;
+            ringBtn.innerHTML = '&#128276; RING THE HOST';
+        }
+
+        // Smooth 3-stage talk permit chirp
+        function playPreambleTone() {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, now);
+            osc.frequency.setValueAtTime(1244, now + 0.040);
+            osc.frequency.setValueAtTime(1760, now + 0.080);
+
+            gain.gain.setValueAtTime(0.55, now);
+            gain.gain.setValueAtTime(0.55, now + 0.110);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.140);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.140);
+        }
+
+        function playCourtesyBeep() {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, now);
+
+            gain.gain.setValueAtTime(0.35, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.06);
+        }
+
+        async function startAudioPipeline() {
+            if (audioCtx) {
+                return; // already running (e.g. resumed quickly after a drop)
+            }
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SAMPLE_RATE });
+            await audioCtx.resume();
+            try {
+                micStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true,
+                        channelCount: 1,
+                        sampleRate: { ideal: SAMPLE_RATE },
+                    }
+                });
+
+                const source = audioCtx.createMediaStreamSource(micStream);
+
+                analyserNode = audioCtx.createAnalyser();
+                analyserNode.fftSize = 64;
+                source.connect(analyserNode);
+
+                const workletBlob = new Blob([MIC_WORKLET_SRC], { type: 'application/javascript' });
+                const workletUrl = URL.createObjectURL(workletBlob);
+                await audioCtx.audioWorklet.addModule(workletUrl);
+                URL.revokeObjectURL(workletUrl);
+
+                micWorklet = new AudioWorkletNode(audioCtx, 'mic-capture-processor');
+                micWorklet.port.onmessage = (e) => {
+                    if (isTransmitting && ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(e.data);
+                    }
+                };
+                source.connect(micWorklet);
+                micWorklet.connect(audioCtx.destination); // silent -- keeps the node alive, no feedback
+
+                updateVUMeter();
+            } catch (err) {
+                alert('Audio hardware error: ' + err.message);
+                leaveSession(); // bail back to the lobby cleanly rather than a stuck half-state
+            }
+        }
+
+        function updateVUMeter() {
+            if (!analyserNode) return;
+            const dataArray = new Uint8Array(analyserNode.frequencyBinCount);
+            analyserNode.getByteFrequencyData(dataArray);
+
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+            const average = sum / dataArray.length;
+            const percentage = Math.min(100, Math.round((average / 128) * 100));
+
+            vuBar.style.width = percentage + '%';
+            vuValue.textContent = percentage + '%';
+
+            requestAnimationFrame(updateVUMeter);
+        }
+
+        // Jitter buffer + anti-backlog guard.
+        //
+        // Incoming packets are NOT simply queued back-to-back with no
+        // ceiling -- if packets piled up during a drop (backgrounded tab,
+        // brief wifi loss) and then arrived in a burst, that would happily
+        // queue seconds of stale audio and play the whole backlog back,
+        // seconds behind live.
+        //
+        // Instead, once the schedule drifts more than MAX_BACKLOG_SEC ahead
+        // of real time, incoming packets are silently dropped (not queued
+        // further) until it's back under the cap. Always prefer "live" over
+        // "complete".
+        function playReceivedPCM(arrayBuffer) {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+
+            if (nextStartTime - now > MAX_BACKLOG_SEC) {
+                return; // dropping stale backlog audio
+            }
+
+            const pcm16 = new Int16Array(arrayBuffer);
+            const float32 = new Float32Array(pcm16.length);
+            for (let i = 0; i < pcm16.length; i++) float32[i] = pcm16[i] / 32768.0;
+
+            const buffer = audioCtx.createBuffer(1, float32.length, SAMPLE_RATE);
+            buffer.getChannelData(0).set(float32);
+
+            const source = audioCtx.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioCtx.destination);
+
+            if (nextStartTime < now + 0.01) {
+                nextStartTime = now + JITTER_BUFFER_SEC;
+            }
+            source.start(nextStartTime);
+            nextStartTime += buffer.duration;
+        }
+
+        function startTransmission() {
+            if (isTransmitting) return;
+            isTransmitting = true;
+            if (micWorklet) micWorklet.port.postMessage({ type: 'set-active', active: true });
+
+            playPreambleTone();
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'tx_start' }));
+            }
+
+            talkBtn.classList.add('transmitting');
+            talkLabel.textContent = 'TRANSMITTING';
+        }
+
+        function stopTransmission() {
+            if (!isTransmitting) return;
+            isTransmitting = false;
+            if (micWorklet) micWorklet.port.postMessage({ type: 'set-active', active: false });
+
+            playCourtesyBeep();
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'tx_stop' }));
+            }
+
+            talkBtn.classList.remove('transmitting');
+            talkLabel.textContent = currentMode === 'ptt' ? 'HOLD TO TALK' : 'TAP TO TRANSMIT';
+        }
+
+        function setMode(mode) {
+            stopTransmission();
+            currentMode = mode;
+            if (mode === 'ptt') {
+                pttBtn.classList.add('active');
+                alwaysBtn.classList.remove('active');
+                talkLabel.textContent = 'HOLD TO TALK';
+            } else {
+                alwaysBtn.classList.add('active');
+                pttBtn.classList.remove('active');
+                talkLabel.textContent = 'TAP TO TRANSMIT';
+            }
+        }
+
+        const handlePTTStart = (e) => {
+            if (currentMode === 'ptt') {
+                e.preventDefault();
+                startTransmission();
+            }
+        };
+
+        const handlePTTEnd = (e) => {
+            if (currentMode === 'ptt') {
+                e.preventDefault();
+                stopTransmission();
+            }
+        };
+
+        talkBtn.addEventListener('mousedown', handlePTTStart);
+        talkBtn.addEventListener('mouseup', handlePTTEnd);
+        talkBtn.addEventListener('mouseleave', handlePTTEnd);
+
+        talkBtn.addEventListener('touchstart', handlePTTStart);
+        talkBtn.addEventListener('touchend', handlePTTEnd);
+        talkBtn.addEventListener('touchcancel', handlePTTEnd);
+
+        talkBtn.addEventListener('click', () => {
+            if (currentMode === 'always') {
+                if (isTransmitting) stopTransmission();
+                else startTransmission();
+            }
+        });
+
+        // Extra safety net: a backgrounded/locked tab is exactly the
+        // scenario that used to cause a burst of stale audio on return.
+        // Force an immediate resync the moment the tab is visible again,
+        // instead of relying only on the per-packet backlog cap to
+        // gradually catch up.
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && audioCtx) {
+                nextStartTime = 0;
+            }
+        });
+
+        setStatus('initializing');
+        connectWebSocket();
+    </script>
+</body>
+</html>
