@@ -104,7 +104,7 @@ class TacticomServer(
     // the Python version, since NanoWSD already gives each connection its
     // own long-lived object.
     // ------------------------------------------------------------------
-    inner class TacticomWebSocket(handshake: IHTTPSession) : WebSocket(handshake) {
+    private inner class TacticomWebSocket(handshake: IHTTPSession) : WebSocket(handshake) {
         val ip: String = handshake.remoteIpAddress ?: "unknown"
         var profile: String? = null
         var session: SessionRoom? = null
